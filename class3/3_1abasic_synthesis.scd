@@ -4,9 +4,10 @@ s.makeWindow;
 
 
 
+
 (
 a = NodeProxy.new.play; // play to hardware output.
-a.fadeTime = 1; // fadeTime specifies crossfade
+a.fadeTime = 10; // fadeTime specifies crossfade
 // set the source
 a.source = { };
 ) // start your engines, A is empty!
@@ -18,7 +19,7 @@ a.source = { }; // start your engines, A is empty!
 (a.source =
 { var ampMod, kY, kX;
 	kX = MouseX.kr(0.1, 200, 0);
-	kY = MouseY.kr(0.1, 1.0, 0);
+	kY = Mou=seY.kr(0.1, 1.0, 0);
 	ampMod = SinOsc.ar(kX, 0, 1.0);
 	LFTri.ar(220, 0, ampMod);};
 ) //simple AM
@@ -45,7 +46,9 @@ a.source = {
 	pitch;
 	};
 )
+SinOsc.ar(
 
+a.scope;
 //actually the version below has an OFFSET that i rather link that is more functional.
 (
 a.source = {
@@ -57,6 +60,7 @@ a.source = {
 	pitch;
 	};
 )
+SinOsc.ar(
 
 //now we will change pitch.
 //the key is that the root of the first oscillators pitch is ADDED with the offset of another
@@ -65,14 +69,14 @@ a.source = {
 a.source = {
 	var pitch, mod, tempo, intensity;
 	tempo = MouseX.kr(0, 30);
-	intensity = MouseY.kr(0, 400);
- 	mod = SinOsc.ar(tempo, 0, intensity);
+	intensity = MouseY.kr(0, 3000);
+ 	mod = LFTri.ar(tempo, 1, intensity);
 	pitch = SinOsc.ar(440+mod, 0, 0.6);
 	pitch;
 	};
 )
 
-
+LFPulse.ar
 
 (
 a.source =
@@ -87,6 +91,7 @@ a.source =
 
 a.source ={};
 
+		SinOsc.ar(
 
 (
 a.source =
@@ -107,7 +112,7 @@ a.source =
 	kX = MouseX.kr(0.1, 20, 0);
 	mod = SinOsc.ar(kX, 0, 1000, kY);
 	sig = Saw.ar(kX, 0.1);
-	RLPF.ar(sig, mod, 0.01);};
+	RLPF.ar(sig, mod, 0.001);};
 )
 
 // saw wave "ringing" the input to filter, classic watery plingy!
@@ -138,9 +143,47 @@ a.source =
 
 
 
-a.source = ();
+a.source = {};
 
 
+//some advanced stuff
+
+// allocate buffer -----gotta do this if were using buffers!
+b = Buffer.alloc(s,44100,1);
+
+
+// Dust randomly triggers Decay to create an exponential
+// decay envelope for the WhiteNoise input source
+(
+a.source =
+{ var sig, mod, kY, kX, in, out;
+	kY = MouseY.kr(0.1, 2.7, 0);
+	kX = MouseX.kr(0.01, 10.0, 0);
+	in = LFSaw.ar(200,1.0);
+	sig = Decay.ar(Dust.ar(kX,0.5), 0.3, in);
+	out = BufDelayL.ar(b.bufnum, sig, kY, 1, sig); // input is mixed with delay via the add input
+	out;
+};
+)
+
+
+{
+
+
+// another one to play with
+
+(
+a.source =
+{
+    var signal, out, delay, dry, input;
+	input = SinOsc.ar(500, 0, 1.0);
+    signal = Decay.ar(Dust.ar(5,0.5), 0.2, input);
+    delay = CombN.ar(signal, 0.2, 0.2, 3);
+    dry = signal;
+    out = [dry, dry + delay];
+    out;
+}
+)
 
 
 a.source = { SinOsc.ar([350, 351.3], 0, 0.2) };
