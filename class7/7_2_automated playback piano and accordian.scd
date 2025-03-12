@@ -2,10 +2,10 @@
 
 // Let's get some other sound files into buffers
 (
-//~dirpath = "MySounds/*".resolveRelative; //when you load up a folder, you gotta have the slash after it!
-~dirpath = "piano and accordian/*".resolveRelative; //this folder also sounds good for these examples.
+~dirpath = "MySounds/*".resolveRelative; //when you load up a folder, you gotta have the slash after it!
+//~dirpath = "piano and accordian/*".resolveRelative; //this folder also sounds good for these examples.
 ~filepaths = ~dirpath.pathMatch;
-~buffers = ~filepaths.collect { |path|  Buffer.read(s, path) };
+//~buffers = ~filepaths.collect { |path|  Buffer.read(s, path) };
 ~buffers = ~filepaths.collect { |path|  Buffer.readChannel(s, path, channels: [0]);};
 
 // Make sure the server is booted first
@@ -19,6 +19,7 @@ s.waitForBoot({
   // Now play it
   ~np.play;
 });
+
 )
 
 /*
@@ -231,6 +232,7 @@ Here is a simple example:
 //all that code just to do two things!
 
 // instead we can use loop to do this autmatically:
+(
 ~np[1] =  Task({ var buf, rate, amp;
 	loop {
 		buf =  ~buffers.choose;
@@ -245,6 +247,7 @@ Here is a simple example:
 		buf.duration.wait;
 	}
 });
+)
 //now this sample player plays infinitely.
 
 ~np[1]={nil}
